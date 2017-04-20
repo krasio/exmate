@@ -46,6 +46,17 @@ defmodule Exmate do
     Redix.command!(conn, ["DEL", base(kind), database(kind), cachebase(kind)])
   end
 
+  def remove(id, kind, conn) do
+    raw = Redix.command!(conn, ["HGET", database(kind), id])
+    item = Poison.decode!(raw, as: %Item{kind: kind, raw: String.trim(raw)})
+    Redix.command!(conn, ["HDEL", database(kind), id])
+    Enum.each(prefixes_for_phrase(item.term), fn(prefix) ->
+      Redix.command!(conn, ["SREM", base(item.kind), prefix])
+      Redix.command!(conn, ["ZREM", "#{base(item.kind)}:#{prefix}", item.id])
+      Redix.command!(conn, ["ZREM", "#{cachebase(item.kind)}:#{prefix}", item.id])
+    end)
+  end
+
   defp query_words([], _, _), do: []
 
   defp query_words(words, kind, conn) do
@@ -58,11 +69,15 @@ defmodule Exmate do
     end
 
     ids = Redix.command!(conn, ["ZREVRANGE", cachekey, 0, 5-1])
-    Redix.command!(conn, ["HMGET", database(kind)] ++ ids)
-    |> Enum.map(fn(raw) ->
-      item = Poison.decode!(raw, as: %Item{})
-      %{item | kind: kind, raw: String.trim(raw)}
-    end)
+    if Enum.any?(ids) do
+      Redix.command!(conn, ["HMGET", database(kind)] ++ ids)
+      |> Enum.map(fn(raw) ->
+        item = Poison.decode!(raw, as: %Item{})
+        %{item | kind: kind, raw: String.trim(raw)}
+      end)
+    else
+      []
+    end
   end
 
   defp parse_item(raw, kind) do
