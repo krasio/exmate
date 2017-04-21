@@ -1,20 +1,4 @@
 defmodule Exmate do
-  @moduledoc """
-  Documentation for Exmate.
-  """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Exmate.hello
-      :world
-
-  """
-  def hello do
-    :world
-  end
 
   defmodule Item do
     @derive [Poison.Encoder]
@@ -58,7 +42,6 @@ defmodule Exmate do
   end
 
   defp query_words([], _, _), do: []
-
   defp query_words(words, kind, conn) do
     cachekey = cachebase(kind) <> ":" <> Enum.join(words, "|")
     exists = Redix.command!(conn, ["EXISTS", cachekey])
@@ -69,15 +52,16 @@ defmodule Exmate do
     end
 
     ids = Redix.command!(conn, ["ZREVRANGE", cachekey, 0, 5-1])
-    if Enum.any?(ids) do
-      Redix.command!(conn, ["HMGET", database(kind)] ++ ids)
-      |> Enum.map(fn(raw) ->
-        item = Poison.decode!(raw, as: %Item{})
-        %{item | kind: kind, raw: String.trim(raw)}
-      end)
-    else
-      []
-    end
+    fetch_by_ids(ids, kind, conn)
+  end
+
+  defp fetch_by_ids([], _, _), do: []
+  defp fetch_by_ids(ids, kind, conn) do
+    Redix.command!(conn, ["HMGET", database(kind)] ++ ids)
+    |> Enum.map(fn(raw) ->
+      item = Poison.decode!(raw, as: %Item{})
+      %{item | kind: kind, raw: String.trim(raw)}
+    end)
   end
 
   defp parse_item(raw, kind) do
