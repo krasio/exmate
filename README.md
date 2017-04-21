@@ -1,19 +1,9 @@
 # Exmate
+Exmate is [Gomate](https://github.com/krasio/gomate) but in written Elixir - a toy project to rewrite [seatgeek/soulmate](https://github.com/seatgeek/soulmate) as a learning excersice.
 
-**TODO: Add description**
+Written during my 10% time at [Powershop](https://github.com/powershop).
 
-## Installation
+# Still work in progress!
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `exmate` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [{:exmate, "~> 0.1.0"}]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/exmate](https://hexdocs.pm/exmate).
-
+# License
+MIT licence.
