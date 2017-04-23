@@ -6,6 +6,7 @@ Written during my 10% time at [Powershop](https://github.com/powershop).
 # TODO
 - [ ] Convert to OTP app.
 - [ ] Setup pool of Redix connections using [devinus/poolboy](https://github.com/devinus/poolboy).
+- [ ] Add mix tasks so it can be used from command line.
 
 # License
 MIT licence.
