@@ -3,7 +3,9 @@ Exmate is [Gomate](https://github.com/krasio/gomate) but in Elixir - a toy proje
 
 Written during my 10% time at [Powershop](https://github.com/powershop).
 
-# Still work in progress!
+# TODO
+- [ ] Convert to OTP app.
+- [ ] Setup pool of Redix connections using [devinus/poolboy](https://github.com/devinus/poolboy).
 
 # License
 MIT licence.
